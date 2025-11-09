@@ -23,11 +23,21 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Jupyter Book
+      # ⬇️ Usar Jupyter Book clásico (Sphinx)
+      - name: Install Jupyter Book (Sphinx)
         run: |
           python -m pip install -U pip
-          pip install -U jupyter-book
+          pip install "jupyter-book==0.15.1"
           jupyter-book --version
+
+      - name: Debug tree (útil si algo falla)
+        run: |
+          pwd
+          ls -la
+          echo '--- _config.yml ---'; sed -n '1,200p' _config.yml || true
+          echo '--- _toc.yml ---'; sed -n '1,200p' _toc.yml || true
+          echo '--- notebooks ---'; ls -la *.ipynb || true
+          echo '--- intro.md ---'; test -f intro.md && head -n 20 intro.md || echo "intro.md NO existe"
 
       - name: Clean previous build
         run: jupyter-book clean .
@@ -35,8 +45,11 @@ jobs:
       - name: Build the book
         run: jupyter-book build .
 
-      - name: Disable Jekyll
-        run: touch _build/html/.nojekyll
+      - name: Disable Jekyll (safe)
+        run: |
+          if [ -d _build/html ]; then
+            touch _build/html/.nojekyll
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
@@ -55,3 +68,4 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
