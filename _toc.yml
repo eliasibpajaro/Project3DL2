@@ -7,8 +7,8 @@ chapters:
 
 - file: EDA
 - file: DistilBERT
-- file: Word2Vec+BiLSTM
-- file: CNN-1D
-- file: TF-IDF
+- file: Word2Vec
+- file: CNN
+- file: TF
 - file: FastText
 
