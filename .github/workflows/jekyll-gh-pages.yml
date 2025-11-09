@@ -1,49 +1,39 @@
-name: deploy-book
+name: jbook-ghpages
+
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  contents: write    # necesario para pushear a gh-pages
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install deps
         run: |
-          pip install -U pip
+          python -m pip install -U pip
           pip install jupyter-book
-          jupyter-book --version
 
-      - name: Build the book
-        run: jupyter-book build .
+      - name: Build Jupyter Book
+        run: |
+          jupyter-book build .
+          # desactiva Jekyll en GitHub Pages (sirve estáticos tal cual):
+          mkdir -p _build/html
+          touch _build/html/.nojekyll
 
-      - name: Ensure no Jekyll
-        run: mkdir -p _build/html && touch _build/html/.nojekyll
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: _build/html
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _build/html
+          publish_branch: gh-pages
+          force_orphan: true     # rama limpia con solo el sitio
