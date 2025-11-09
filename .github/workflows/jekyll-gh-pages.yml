@@ -1,7 +1,7 @@
 name: deploy-book
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -9,8 +9,12 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  deploy-book:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,34 +25,25 @@ jobs:
 
       - name: Install deps
         run: |
-          python -m pip install -U pip
+          pip install -U pip
           pip install jupyter-book
           jupyter-book --version
 
-      - name: Debug tree (útil si algo falla)
-        run: |
-          pwd
-          ls -la
-          echo '--- _toc.yml ---'
-          sed -n '1,200p' _toc.yml || true
-          echo '--- notebooks ---'
-          ls -la *.ipynb || true
-
       - name: Build the book
-        run: |
-          jupyter-book build .
+        run: jupyter-book build .
 
       - name: Ensure no Jekyll
-        run: |
-          mkdir -p _build/html
-          touch _build/html/.nojekyll
+        run: mkdir -p _build/html && touch _build/html/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: _build/html
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
