@@ -21,8 +21,11 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install -U pip
+          python -m pip install -U pip
+          # instala lo mínimo para jupyter-book
           pip install jupyter-book
+          # si tienes requirements.txt, descomenta:
+          # pip install -r requirements.txt
           jupyter-book --version
 
       - name: Debug tree (útil si algo falla)
@@ -35,10 +38,14 @@ jobs:
           ls -la *.ipynb || true
 
       - name: Build the book
-        run: jupyter-book build .
+        run: |
+          # -n: avisos útiles; --keep-going: sigue aunque falle alguna página
+          jupyter-book build . --keep-going -n
 
       - name: Ensure no Jekyll
-        run: touch _build/html/.nojekyll
+        run: |
+          mkdir -p _build/html
+          touch _build/html/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
@@ -48,3 +55,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
