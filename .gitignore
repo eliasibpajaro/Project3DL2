@@ -3,7 +3,7 @@
 results_*/
 fasttext_data*/
 fasttext_model/
-#_build/
+_build/
 outputs/
 figs/
 .ipynb_checkpoints/
