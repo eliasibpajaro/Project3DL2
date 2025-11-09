@@ -7,3 +7,4 @@ chapters:
   - file: CNN
   - file: TF
   - file: FastText
+  - file: Resumen
