@@ -9,10 +9,6 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
@@ -27,24 +23,27 @@ jobs:
         run: |
           pip install -U pip
           pip install jupyter-book
+          jupyter-book --version
 
       - name: Debug tree (útil si algo falla)
-        run: ls -la && echo "---" && cat _toc.yml || true
+        run: |
+          pwd
+          ls -la
+          echo '--- _toc.yml ---'
+          sed -n '1,200p' _toc.yml || true
+          echo '--- notebooks ---'
+          ls -la *.ipynb || true
 
       - name: Build the book
         run: jupyter-book build .
-        # si tu libro está en subcarpeta, añade:
-        # working-directory: JBOOKS/Project3DL2
 
       - name: Ensure no Jekyll
         run: touch _build/html/.nojekyll
-        # working-directory: JBOOKS/Project3DL2 (si aplica)
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
           path: _build/html
-        # working-directory: JBOOKS/Project3DL2 (si aplica)
 
       - name: Deploy to GitHub Pages
         id: deployment
