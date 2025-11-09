@@ -1,0 +1,26 @@
+
+
+
+
+
+
+
+# Artefactos y salidas
+results_*/
+fasttext_data*/
+fasttext_model/
+_build/
+outputs/
+figs/
+.ipynb_checkpoints/
+
+# Pesados
+*.pt
+*.safetensors
+*.npz
+*.zip
+*.bin
+*.h5
+*.pth
+*.ckpt
+*.onnx
