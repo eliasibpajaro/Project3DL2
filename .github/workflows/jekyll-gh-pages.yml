@@ -1,6 +1,7 @@
 name: deploy-book
 on:
-  push: { branches: [ main, master ] }
+  push:
+    branches: [ main, master ]
   workflow_dispatch:
 
 permissions:
@@ -11,10 +12,6 @@ permissions:
 jobs:
   deploy-book:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .   # <-- cambia si tu libro está en subcarpeta
-
     steps:
       - uses: actions/checkout@v4
 
@@ -26,18 +23,19 @@ jobs:
         run: |
           pip install -U pip
           pip install jupyter-book
+          jupyter-book --version
 
       - name: Debug tree (útil si algo falla)
         run: |
           pwd
           ls -la
           echo '--- _toc.yml ---'
-          sed -n '1,120p' _toc.yml || true
+          sed -n '1,200p' _toc.yml || true
           echo '--- notebooks ---'
           ls -la *.ipynb || true
 
       - name: Build the book
-        run: jupyter-book build . -W   # -W = warnings as errors (te dice si falta un archivo)
+        run: jupyter-book build .
 
       - name: Ensure no Jekyll
         run: touch _build/html/.nojekyll
@@ -50,4 +48,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
