@@ -1,0 +1,14 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+chapters:
+
+- file: EDA
+- file: DistilBERT
+- file: Word2Vec+BiLSTM
+- file: CNN-1D
+- file: TF-IDF
+- file: FastText
+
