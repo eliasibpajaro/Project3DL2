@@ -1,0 +1,57 @@
+name: deploy-book
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+# Requerido por Pages v4
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy-book:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt   # ajusta si tus deps están en otra ruta
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt        # ajusta la ruta si aplica
+
+      # (opcional) cache de notebooks ejecutados si activaste "execute_notebooks: cache"
+      - name: Cache executed notebooks
+        uses: actions/cache@v4
+        with:
+          path: _build/.jupyter_cache
+          key: jupyter-book-cache-${{ hashFiles('requirements.txt') }}
+
+      - name: Build the book
+        run: jupyter-book build . --keep-going
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _build/html
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
