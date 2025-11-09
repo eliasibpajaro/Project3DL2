@@ -5,10 +5,10 @@ format: jb-book
 root: intro
 chapters:
 
-- file: EDA
-- file: DistilBERT
-- file: Word2Vec
-- file: CNN
-- file: TF
-- file: FastText
+  - file: EDA
+  - file: DistilBERT
+  - file: Word2Vec
+  - file: CNN
+  - file: TF
+  - file: FastText
 
